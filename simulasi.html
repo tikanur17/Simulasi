@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulasi Cuaca Interaktif</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #e3f2fd; padding: 20px; }
+    input, button { margin-top: 10px; font-size: 16px; }
+    #hasil { font-weight: bold; margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>🔬 Simulasi Cuaca</h1>
+  <label>Suhu (°C): <input type="number" id="suhu" /></label><br>
+  <label>Kelembapan (%): <input type="number" id="kelembapan" /></label><br>
+  <button onclick="prediksi()">Prediksi Cuaca</button>
+  <p id="hasil"></p>
+  <canvas id="grafikCuaca" width="400" height="200"></canvas>
+  <script>
+    const suhuData = [];
+    const kelembapanData = [];
+    const waktuData = [];
+
+    const ctx = document.getElementById('grafikCuaca').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: waktuData,
+        datasets: [
+          {
+            label: 'Suhu (°C)',
+            data: suhuData,
+            borderColor: 'red',
+            fill: false
+          },
+          {
+            label: 'Kelembapan (%)',
+            data: kelembapanData,
+            borderColor: 'blue',
+            fill: false
+          }
+        ]
+      }
+    });
+
+    function prediksi() {
+      const suhu = parseFloat(document.getElementById("suhu").value);
+      const kelembapan = parseFloat(document.getElementById("kelembapan").value);
+      let hasil = "Tidak terdeteksi";
+
+      if (suhu > 30 && kelembapan < 60) {
+        hasil = "☀️ Cerah";
+      } else if (suhu > 25 && kelembapan >= 60) {
+        hasil = "🌤️ Berawan";
+      } else if (kelembapan > 80) {
+        hasil = "🌧️ Hujan";
+      }
+
+      document.getElementById("hasil").innerText = `Prediksi Cuaca: ${hasil}`;
+
+      const waktu = new Date().toLocaleTimeString();
+      waktuData.push(waktu);
+      suhuData.push(suhu);
+      kelembapanData.push(kelembapan);
+      chart.update();
+    }
+  </script>
+</body>
+</html>

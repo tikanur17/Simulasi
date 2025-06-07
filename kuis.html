@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuis Cuaca</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff3e0; padding: 20px; }
+    h1 { color: #e65100; }
+    .question { margin-bottom: 20px; }
+    button { display: block; margin: 10px 0; }
+    #leaderboard { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>🎮 Kuis Cuaca</h1>
+  <div id="quiz"></div>
+  <h2 id="score"></h2>
+  <div id="leaderboard">
+    <h3>🏆 Leaderboard</h3>
+    <ol id="board"></ol>
+  </div>
+  <script>
+    const questions = [
+      { q: "Suhu: 32°C, Kelembapan: 40%. Prediksi cuaca?", a: "Cerah" },
+      { q: "Suhu: 26°C, Kelembapan: 65%. Prediksi cuaca?", a: "Berawan" },
+      { q: "Suhu: 24°C, Kelembapan: 85%. Prediksi cuaca?", a: "Hujan" }
+    ];
+    let current = 0;
+    let score = 0;
+
+    const quiz = document.getElementById("quiz");
+    const scoreEl = document.getElementById("score");
+    const boardEl = document.getElementById("board");
+
+    function showQuestion() {
+      if (current >= questions.length) {
+        scoreEl.textContent = `Skor akhir: ${score}/${questions.length}`;
+        simpanSkor(score);
+        tampilLeaderboard();
+        return;
+      }
+      const q = questions[current];
+      quiz.innerHTML = `
+        <div class="question">
+          <p>${q.q}</p>
+          <button onclick="jawab('Cerah')">☀️ Cerah</button>
+          <button onclick="jawab('Berawan')">🌤️ Berawan</button>
+          <button onclick="jawab('Hujan')">🌧️ Hujan</button>
+        </div>
+      `;
+    }
+
+    function jawab(pilihan) {
+      if (pilihan === questions[current].a) score++;
+      current++;
+      showQuestion();
+    }
+
+    function simpanSkor(nilai) {
+      let data = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+      let nama = prompt("Masukkan nama untuk leaderboard:");
+      data.push({ nama, nilai });
+      data.sort((a, b) => b.nilai - a.nilai);
+      data = data.slice(0, 5); // hanya 5 besar
+      localStorage.setItem("leaderboard", JSON.stringify(data));
+    }
+
+    function tampilLeaderboard() {
+      let data = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+      boardEl.innerHTML = "";
+      data.forEach(d => {
+        boardEl.innerHTML += `<li>${d.nama}: ${d.nilai}</li>`;
+      });
+    }
+
+    showQuestion();
+    tampilLeaderboard();
+  </script>
+</body>
+</html>
